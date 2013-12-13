@@ -16,113 +16,113 @@ import android.widget.EditText;
 
 public class DateTime extends Activity {
 
-	EditText etype;
-	EditText edate;
-	EditText etime;
-	String yo;
-	String[] resultArr;
-	String[] friendsArr;
+    EditText etype;
+    EditText edate;
+    EditText etime;
+    String yo;
+    String[] resultArr;
+    String[] friendsArr;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_date_time);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_date_time);
 
-		Bundle b = getIntent().getExtras();
-		resultArr = b.getStringArray("selectedItems");
-		friendsArr = b.getStringArray("selectedFriends");
-		yo = b.getString("login");
-
-
-		etype = (EditText) findViewById(R.id.edit_type);
-		edate = (EditText) findViewById(R.id.edit_date);
-		etime = (EditText) findViewById(R.id.edit_time);
-
-		Button timingsubmit = (Button) findViewById(R.id.timing_submit);
-		timingsubmit.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				String bld = etype.getText().toString();
-				String mdate = edate.getText().toString();
-				String mtime = etime.getText().toString();
+        Bundle b = getIntent().getExtras();
+        resultArr = b.getStringArray("selectedItems");
+        friendsArr = b.getStringArray("selectedFriends");
+        yo = b.getString("login");
 
 
-				//	MenuItemCompat.setActionView(item, R.layout.progress);
-				//			item.setActionView(R.layout.progress);
+        etype = (EditText) findViewById(R.id.edit_type);
+        edate = (EditText) findViewById(R.id.edit_date);
+        etime = (EditText) findViewById(R.id.edit_time);
+
+        Button timingsubmit = (Button) findViewById(R.id.timing_submit);
+        timingsubmit.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                String bld = etype.getText().toString();
+                String mdate = edate.getText().toString();
+                String mtime = etime.getText().toString();
 
 
-				String cmd = "sendvotingeventinfo " + yo  +"::" + bld+ "::";
-				for(int i=0; i < resultArr.length; i++){
-					cmd = cmd + resultArr[i] + ",";
-				}
-				cmd = cmd.substring(0, cmd.length()-1);
-				
-				cmd = cmd + "::";
-				for(int i=0; i < friendsArr.length; i++){
-					cmd = cmd + friendsArr[i] + ",";
-				}
-				cmd = cmd.substring(0, cmd.length()-1);
-				
-				cmd = cmd + "::" + mdate + "::" + mtime + "::" + mdate + "::" + mtime;
+                //	MenuItemCompat.setActionView(item, R.layout.progress);
+                //			item.setActionView(R.layout.progress);
 
 
-				String data = sendHttpRequest(MainActivity.url, cmd);
-				System.out.println("Data ["+data+"]");
+                String cmd = "sendvotingeventinfo " + yo.trim()  +"::" + bld.trim() + "::";
+                for(int i=0; i < resultArr.length; i++){
+                    cmd = cmd + resultArr[i] + ",";
+                }
+                cmd = cmd.substring(0, cmd.length()-1);
 
-		        Bundle b = new Bundle();
-		        b.putString("login", yo);
-		        b.putString("veid", data);
-		        // Add the bundle to the intent.
-		      				
-				Intent intent = new Intent(getApplicationContext(), Voting.class);
-				intent.putExtras(b);
+                cmd = cmd + "::";
+                for(int i=0; i < friendsArr.length; i++){
+                    cmd = cmd + friendsArr[i] + ",";
+                }
+                cmd = cmd.substring(0, cmd.length()-1);
 
-				startActivity(intent);
-			}
-		});
+                cmd = cmd + "::" + mdate.trim() + "::" + mtime.trim() + "::" + mdate.trim() + "::" + mtime.trim();
 
-	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.date_time, menu);
-		return true;
-	}
+                String data = sendHttpRequest(MainActivity.url, cmd);
+                System.out.println("Data ["+data+"]");
 
-	private String sendHttpRequest(String url, String name) {
-		StringBuffer buffer = new StringBuffer();
-		try {
-			System.out.println("URL ["+url+"] - Name ["+name+"]");
+                Bundle b = new Bundle();
+                b.putString("login", yo);
+                b.putString("veid", data);
+                // Add the bundle to the intent.
 
-			HttpURLConnection con = (HttpURLConnection) ( new URL(url)).openConnection();
-			con.setRequestMethod("POST");
-			con.setDoInput(true);
-			con.setDoOutput(true);
-			con.connect();
-			con.getOutputStream().write( (name).getBytes());
+                Intent intent = new Intent(getApplicationContext(), Voting.class);
+                intent.putExtras(b);
 
-			InputStream is = con.getInputStream();
-			byte[] b = new byte[1024];
-			byte[] b2;
+                startActivity(intent);
+            }
+        });
 
-			int bytesRead = 0;
-			while ( (bytesRead = is.read(b)) >= 0){
-				b2 = new byte[bytesRead];
-				for(int i=0; i < bytesRead; i++){
-					b2[i] = b[i];
-				}
-				buffer.append(new String(b2));
-			}
+    }
 
-			con.disconnect();
-		}
-		catch(Throwable t) {
-			t.printStackTrace();
-		}
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.date_time, menu);
+        return true;
+    }
 
-		return buffer.toString();
-	}
+    private String sendHttpRequest(String url, String name) {
+        StringBuffer buffer = new StringBuffer();
+        try {
+            System.out.println("URL ["+url+"] - Name ["+name+"]");
+
+            HttpURLConnection con = (HttpURLConnection) ( new URL(url)).openConnection();
+            con.setRequestMethod("POST");
+            con.setDoInput(true);
+            con.setDoOutput(true);
+            con.connect();
+            con.getOutputStream().write( (name).getBytes());
+
+            InputStream is = con.getInputStream();
+            byte[] b = new byte[1024];
+            byte[] b2;
+
+            int bytesRead = 0;
+            while ( (bytesRead = is.read(b)) >= 0){
+                b2 = new byte[bytesRead];
+                for(int i=0; i < bytesRead; i++){
+                    b2[i] = b[i];
+                }
+                buffer.append(new String(b2));
+            }
+
+            con.disconnect();
+        }
+        catch(Throwable t) {
+            t.printStackTrace();
+        }
+
+        return buffer.toString();
+    }
 
 }
